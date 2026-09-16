@@ -1,0 +1,15 @@
+{
+  "name": "homelab",
+  "image": "ghcr.io/milaneuh/devcontainer-base:latest",
+  "remoteUser": "vscode",
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,readonly"
+  ],
+  "remoteEnv": {
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "postCreateCommand": "bash -lc 'mise trust && mise install'"
+}
