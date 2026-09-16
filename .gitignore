@@ -1,2 +1,4 @@
 .lab/
-./FORMATION.md
+/FORMATION.md
+tags
+**/.claude/settings.local.json
