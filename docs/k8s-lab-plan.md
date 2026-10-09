@@ -1,6 +1,6 @@
 # Kubernetes lab plan: 3 remote VMs → CKA
 
-**Context:** 3 VMs × 16 GB RAM on a remote network, reached over SSH. Manifests live in Git and are synced by Flux. Renovate opens PRs under my username.
+**Context:** 3 VMs × 16 GB RAM on a remote network, reached over SSH. Manifests live in Git and are synced by Flux. Renovate opens PRs under my username. A local **minikube** sandbox on my Mac runs alongside as a disposable training ground.
 
 **End goal:** pass the CKA.
 
@@ -59,8 +59,13 @@ flowchart TD
     K9["K9 · Full destroy & rebuild"]
     K10["K10 · Exam preparation"]
 
+    M["M · minikube sandbox<br/>(local, disposable, starts now)"]
+
     K0 --> K1 --> K2 --> K3 --> K4 --> K5
     K4 --> K6 --> K7 --> K8 --> K9 --> K10
+
+    M -.->|"rehearse objects before<br/>deploying them for real"| K4
+    M -.->|"timed drills"| K10
 
     PKI[/"Case 2.2<br/>intermediate CA"/] -.-> K3
     SEC[/"🔸 Secrets-in-Git decision"/] -.->|blocks| K6
@@ -72,6 +77,19 @@ Solid arrows show the phase order. Dotted arrows show dependencies that are easy
 ---
 
 ## Phases
+
+### M: minikube sandbox (parallel track)
+- **Why:** it runs on my Mac **today**, while K0 is blocked waiting for VM access. Breaking it costs nothing: delete and recreate in a minute.
+- **Role:** a training ground, not a second lab. No Flux, no Renovate, nothing in Git that depends on it. Everything is done by hand with `kubectl`, which is what the exam tests.
+- **What I practice:**
+  - every object before deploying it for real on the remote cluster: Pod, Deployment, Service, ConfigMap, Secret, probes, requests/limits, Jobs/CronJobs (this matches FORMATION case 6.1);
+  - RBAC and NetworkPolicy experiments, isolated from the real cluster;
+  - multi-node scheduling (taints, affinity, drain) using minikube's multi-node mode;
+  - looking at the control plane from the inside (`minikube ssh`): static pod manifests, kubelet, etcd. minikube is bootstrapped with kubeadm, so this transfers to K1 and K8.
+- 🔸 Driver: which one, given that Lima is already on my Mac?
+- ⚠️ **Limits to remember:** a single machine, no real network between nodes, no exposure to the outside world. Ingress, TLS and anything that depends on the remote network stay K3 topics.
+- **Done when:** this phase never ends. It feeds K4 (rehearsal) and K10 (drills).
+- **CKA:** Workloads & Scheduling, Troubleshooting, speed.
 
 ### K0: Access and foundations
 - **Goal:** reach the nodes and know their network.
@@ -138,7 +156,7 @@ Solid arrows show the phase order. Dotted arrows show dependencies that are easy
 - **Done when:** VMs reinstalled, cluster rebuilt from the runbook, Flux bootstrapped, apps back. Everything Git can't restore (data) is written down as a known gap.
 
 ### K10: Exam preparation
-- Timed drills: imperative `kubectl`, generating YAML with `--dry-run=client -o yaml`, finding things fast in the kubernetes.io docs.
+- Timed drills on minikube (fast reset between attempts): imperative `kubectl`, generating YAML with `--dry-run=client -o yaml`, finding things fast in the kubernetes.io docs.
 - killer.sh simulator, twice.
 - Book the exam.
 
@@ -148,6 +166,7 @@ Solid arrows show the phase order. Dotted arrows show dependencies that are easy
 
 | # | Decision | Blocks | Status |
 |---|---|---|---|
+| 0 | minikube driver | M | 🔸 Open |
 | 1 | Access to 6443 | K0 | 🔸 Open |
 | 2 | Distribution, topology, CNI | K1 | 🔸 Open |
 | 3 | Repo structure and practice zone | K2 | 🔸 Open |

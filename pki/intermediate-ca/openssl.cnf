@@ -1,0 +1,10 @@
+[ req ]
+  prompt                 = no
+  default_md             = sha256
+  distinguished_name     = req_dn
+
+[ req_dn ]
+  countryName            = FR
+  organizationName       = Catalog Lab
+  commonName             = Intermediate CA
+
